@@ -1,141 +1,228 @@
 package com.wsu.erikbuck.gameoflife;
 
+import junit.framework.Assert;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+
+class CellCoordinate {
+    public int x;
+    public int y;
+
+    public CellCoordinate(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public CellCoordinate(final CellCoordinate original, int dx, int dy) {
+        assert null != original;
+        this.x = original.x + dx;
+        this.y = original.y + dy;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + x + ", " + y + "} ";
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.toString().hashCode();
+        //Log.d("hashCode", "" + result);
+        return result;
+    }
+    @Override
+    public boolean equals(Object other) {
+        boolean result = this.toString().equals(other.toString());
+        //Log.d("equals", "" + this + other);
+        return result;
+    }
+}
+
+
+class LifeCell {
+    public enum Status {
+        Alive, Spawning, Dead
+    }
+
+    public CellCoordinate position;
+    public Status status;
+
+    LifeCell(final CellCoordinate position) {
+        assert null != position;
+        this.position = new CellCoordinate(position.x, position.y);
+        this.status = Status.Spawning;
+    }
+
+    @Override
+    public String toString() {
+        return position.toString() + status;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = position.hashCode();
+        //Log.d("hashCode", "" + result);
+        return result;
+    }
+    @Override
+    public boolean equals(Object other) {
+        boolean result = (this.toString().equals(other.toString()));
+        //Log.d("equals", "" + this + other);
+        return result;
+    }
+
+    boolean isSpawning() {
+        return  this.status == Status.Spawning;
+    }
+
+    private int getCountOfNotSpawningNeighbors(final CellCoordinate pos, GameOfLifeModel theModel) {
+        CellCoordinate neighborPositions[] = {
+                new CellCoordinate(pos, -1, -1),
+                new CellCoordinate(pos,  0, -1),
+                new CellCoordinate(pos,  1, -1),
+                new CellCoordinate(pos, -1,  0),
+                new CellCoordinate(pos,  1,  0),
+                new CellCoordinate(pos, -1,  1),
+                new CellCoordinate(pos,  0,  1),
+                new CellCoordinate(pos,  1,  1),
+        };
+
+        int countOfNotSpawnedNeighbors = 0;
+        for(CellCoordinate nextPos : neighborPositions) {
+            //Log.d("getCountOfNotSpawningNeighbors", position + " " + nextPos);
+            //Log.d("containsKey", "" + nextPos + " " + theModel.containsKey(nextPos));
+            assert theModel.containsKey(nextPos);
+
+            if(theModel.containsKey(nextPos)) {
+                //Log.d("contained", position + " " + nextPos);
+
+                if(!theModel.getCellAt(nextPos).isSpawning()) {
+                    countOfNotSpawnedNeighbors += 1;
+                }
+            }
+            else
+            {
+                //Log.d("NOT PRESENT", position + " " + nextPos);
+            }
+            //Log.d("getCountOfNotSpawningNeighbors", nextPos + " countOfNotSpawnedNeighbors " + countOfNotSpawnedNeighbors);
+        }
+
+        return countOfNotSpawnedNeighbors;
+    }
+
+    void update(GameOfLifeModel theModel) {
+        assert status == Status.Alive;
+        assert theModel.containsKey(position);
+        Assert.assertTrue( theModel.containsKey(position) );
+
+        CellCoordinate neighborPositions[] = {
+                new CellCoordinate(position, -1, -1),
+                new CellCoordinate(position,  0, -1),
+                new CellCoordinate(position,  1, -1),
+                new CellCoordinate(position, -1,  0),
+                new CellCoordinate(position,  1,  0),
+                new CellCoordinate(position, -1,  1),
+                new CellCoordinate(position,  0,  1),
+                new CellCoordinate(position,  1,  1),
+        };
+
+        int countOfNotSpawnedNeighbors = getCountOfNotSpawningNeighbors(position, theModel);
+
+        if(2 > countOfNotSpawnedNeighbors) {
+            // Each cell with one or no neighbors dies, as if by solitude.
+            this.status = Status.Dead;
+            //Log.d("2 >", "Dead at " + position);
+        }
+        else if(3 < countOfNotSpawnedNeighbors)  {
+            // Each cell with four or more neighbors dies, as if by overpopulation.
+            this.status = Status.Dead;
+            //Log.d("3 <", "Dead at " + position);
+        }
+        else {
+            // Each cell with two or three neighbors survives.
+            //Log.d("", "Alive at " + position);
+        }
+
+        // Each unpopulated cell with three neighbors becomes populated.
+            for(CellCoordinate pos : neighborPositions) {
+                if(!theModel.containsKey(pos)) {
+                    // pos is unpopulated
+                    if(3 == getCountOfNotSpawningNeighbors(pos, theModel)) {
+                        // pos has exactly 3 neighbors who are not spawning
+                        theModel.spawnCellAt(pos);
+                        //Log.d("3 ==", "Spawn at " + pos);
+                    }
+                }
+            }
+    }
+}
 
 /**
  * Created by erik on 5/23/16.
  */
 public class GameOfLifeModel {
-    static class CellCoordinate {
-        public int x;
-        public int y;
+     private Hashtable<CellCoordinate, LifeCell> mCells;
 
-        CellCoordinate(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
 
-        CellCoordinate(CellCoordinate original, int dx, int dy) {
-            this.x = original.x + dx;
-            this.y = original.y + dy;
-        }
-    }
-    static class Cell {
-        public enum Status {
-            Alive, Spawning, Dead
-        }
-
-        public CellCoordinate position;
-        public Status status;
-
-        Cell(CellCoordinate position) {
-            this.position = position;
-            this.status = Status.Spawning;
-        }
-
-        boolean isSpawning() {
-            return  this.status == Status.Spawning;
-        }
-
-        int getCountOfNotSpawnedNeighbors(CellCoordinate pos, GameOfLifeModel theModel) {
-            CellCoordinate neighborPositions[] = {
-                    new CellCoordinate(pos, -1, -1),
-                    new CellCoordinate(pos,  0, -1),
-                    new CellCoordinate(pos,  1, -1),
-                    new CellCoordinate(pos, -1,  0),
-                    new CellCoordinate(pos,  1,  0),
-                    new CellCoordinate(pos, -1,  1),
-                    new CellCoordinate(pos,  0,  1),
-                    new CellCoordinate(pos,  1,  1),
-            };
-
-            int countOfNotSpawnedNeighbors = 0;
-            for(CellCoordinate nextPos : neighborPositions) {
-                if(theModel.containsKey(nextPos) && !theModel.getCellAt(nextPos).isSpawning()) {
-                    countOfNotSpawnedNeighbors += 1;
-                }
-            }
-
-            return countOfNotSpawnedNeighbors;
-        }
-
-        void update(GameOfLifeModel theModel) {
-            CellCoordinate neighborPositions[] = {
-                    new CellCoordinate(this.position, -1, -1),
-                    new CellCoordinate(this.position,  0, -1),
-                    new CellCoordinate(this.position,  1, -1),
-                    new CellCoordinate(this.position, -1,  0),
-                    new CellCoordinate(this.position,  1,  0),
-                    new CellCoordinate(this.position, -1,  1),
-                    new CellCoordinate(this.position,  0,  1),
-                    new CellCoordinate(this.position,  1,  1),
-            };
-
-            int countOfNotSpawnedNeighbors = getCountOfNotSpawnedNeighbors(this.position, theModel);
-
-            if(2 > countOfNotSpawnedNeighbors) {
-                // Each cell with one or no neighbors dies, as if by solitude.
-                this.status = Status.Dead;
-            }
-            else if(3 < countOfNotSpawnedNeighbors)  {
-                // Each cell with four or more neighbors dies, as if by overpopulation.
-                this.status = Status.Dead;
-            }
-            // Each cell with two or three neighbors survives.
-
-            // Each unpopulated cell with three neighbors becomes populated.
-            for(CellCoordinate pos : neighborPositions) {
-                if(!theModel.containsKey(pos)) {
-                    // pos is unpopulated
-                    if(3 == getCountOfNotSpawnedNeighbors(pos, theModel)) {
-                        theModel.spawnCellAt(pos);
-                    }
-                }
-            }
-        }
+    public boolean containsKey(CellCoordinate pos) {
+        return mCells.containsKey(pos);
     }
 
-     private Hashtable<CellCoordinate, Cell> mCells;
+    public LifeCell getCellAt(CellCoordinate pos) {
+        return mCells.get(pos);
+    }
+
+    public void spawnCellAt(final CellCoordinate pos) {
+        LifeCell newCell = new LifeCell(pos);
+        assert newCell != null;
+        mCells.put(pos, newCell);
+    }
 
     GameOfLifeModel() {
-        this.mCells = new Hashtable<CellCoordinate, Cell>();
+        this.mCells = new Hashtable<CellCoordinate, LifeCell>();
     }
 
-    GameOfLifeModel(CellCoordinate initialPositions[]) {
-        this.mCells = new Hashtable<CellCoordinate, Cell>();
+    GameOfLifeModel(final CellCoordinate initialPositions[]) {
+        this.mCells = new Hashtable<CellCoordinate, LifeCell>();
         for (CellCoordinate initialPosition : initialPositions) {
-            this.mCells.put(initialPosition, new Cell(initialPosition));
+            this.spawnCellAt(initialPosition);
         }
-    }
-
-    private boolean containsKey(CellCoordinate pos) {
-        return this.mCells.containsKey(pos);
-    }
-
-    private Cell getCellAt(CellCoordinate pos) {
-        return this.mCells.get(pos);
-    }
-
-    private void spawnCellAt(CellCoordinate pos) {
-        this.mCells.put(pos, new Cell(pos));
     }
 
     public void update() {
-        for(Cell value : this.getCells()) {
-            value.update(this);
+        //Log.d("", "========= STARTING UPDATE =========");
+        Hashtable<CellCoordinate, LifeCell>newHashtable = new Hashtable<CellCoordinate, LifeCell>();
+
+        // Convert spawning cells into alive cells and remove dead cells from game
+        for(LifeCell cell : mCells.values()) {
+            //Log.d("Before Update", "cell: " + cell);
+
+            if(cell.status == LifeCell.Status.Spawning) {
+                cell.status = LifeCell.Status.Alive;
+                newHashtable.put(cell.position, cell);
+            } else if(cell.status == LifeCell.Status.Dead) {
+                //Log.d("*******************", "cell: " + cell);
+                assert !newHashtable.containsKey(cell.position);
+            } else {
+                newHashtable.put(cell.position, cell);
+            }
+
         }
 
-        for(Cell value : this.getCells()) {
-            if(value.status == Cell.Status.Spawning) {
-                value.status = Cell.Status.Alive;
-            } else if(value.status == Cell.Status.Dead) {
-                this.mCells.remove(value.position);
-            }
+        mCells = newHashtable;
+        for(LifeCell cell : new ArrayList<LifeCell>(mCells.values())) {
+            assert cell.status == LifeCell.Status.Alive;
+            Assert.assertTrue( mCells.containsKey(cell.position) );
+            cell.update(this);
         }
     }
 
-    public Collection<Cell> getCells() {
+    public Collection<LifeCell> getCells() {
         return this.mCells.values();
+    }
+    public Collection<CellCoordinate> getPositions() {
+        return this.mCells.keySet();
     }
 }
