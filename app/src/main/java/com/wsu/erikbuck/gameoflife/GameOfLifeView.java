@@ -11,13 +11,15 @@ import android.util.AttributeSet;
  * Created by erik on 5/22/16.
  */
 public class GameOfLifeView extends ZoomableView {
+    public static int mediumUpdatePeriodMs = 50;
+
     private static float cellSize = 45;
-    private static int delayMs = 50;
 
     private android.graphics.Paint mPaint;
     private GameOfLifeModel mModel;
     private Handler mHandler;
     private boolean mIsRunning;
+    private int mUpdatePeriodMs = mediumUpdatePeriodMs;
 
     private static class Animator implements Runnable {
         GameOfLifeView mView;
@@ -31,7 +33,7 @@ public class GameOfLifeView extends ZoomableView {
             mView.mModel.update();
             mView.invalidate();
             if(mView.mIsRunning) {
-                mView.mHandler.postDelayed(this, delayMs);
+                mView.mHandler.postDelayed(this, mView.mUpdatePeriodMs);
             }
         }
     }
@@ -60,7 +62,7 @@ public class GameOfLifeView extends ZoomableView {
         mRunnable = new Animator(this);
 
         if(mIsRunning) {
-            mHandler.postDelayed(mRunnable, delayMs);
+            mHandler.postDelayed(mRunnable, mUpdatePeriodMs);
         }
     }
 
@@ -68,10 +70,10 @@ public class GameOfLifeView extends ZoomableView {
     // appropriately scaled and translated.
     @Override
     protected void onDrawScaled(Canvas canvas) {
-        float left = ((float)Math.floor((getLeft() - translateX) / cellSize) - 1);
-        float top = ((float)Math.floor((getTop() - translateY) / cellSize) - 1);
-        float right =  (float)Math.ceil((getRight() - translateX) / cellSize);
-        float bottom =  (float)Math.ceil((getBottom() - translateY) / cellSize);
+        float left = ((float)Math.floor((getLeft() - mTranslateX) / cellSize) - 1);
+        float top = ((float)Math.floor((getTop() - mTranslateY) / cellSize) - 1);
+        float right =  (float)Math.ceil((getRight() - mTranslateX) / cellSize);
+        float bottom =  (float)Math.ceil((getBottom() - mTranslateY) / cellSize);
 
         mPaint.setStrokeWidth(3);
         mPaint.setColor(Color.GRAY);
@@ -86,6 +88,10 @@ public class GameOfLifeView extends ZoomableView {
         for(CellCoordinate pos : mModel.getPositions()) {
             canvas.drawCircle((pos.x + 0.5f) * cellSize, (pos.y + 0.5f) * cellSize, cellSize * 0.5f, mPaint);
         }
+    }
+
+    public void setUpdatePerionMs(int someMs) {
+        mUpdatePeriodMs = someMs;
     }
 
     public boolean getIsRunning() { return mIsRunning; }

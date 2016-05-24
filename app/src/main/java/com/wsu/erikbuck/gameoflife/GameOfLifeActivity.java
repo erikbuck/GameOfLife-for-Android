@@ -1,13 +1,12 @@
 package com.wsu.erikbuck.gameoflife;
 
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SeekBar;
 
 import java.util.HashMap;
 
@@ -64,24 +63,38 @@ public class GameOfLifeActivity extends AppCompatActivity {
         gameView.center();
     }
 
+    private GameOfLifeView mGameView;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onStart() {
+        super.onStart();
         setContentView(R.layout.activity_game_of_life);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mGameView = (GameOfLifeView)findViewById(R.id.gameoflife);
+        assert null != mGameView;
+
+        final SeekBar speedSlider = (SeekBar) findViewById(R.id.speed_slider);
+        if (null != speedSlider) {
+            speedSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                    mGameView.setUpdatePerionMs(progress);
+                }
+
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+                public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (null != fab) {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    GameOfLifeView gameView = (GameOfLifeView)findViewById(R.id.gameoflife);
-                    assert(null != gameView);
-                    gameView.toggleIsRunning();
-                    if(gameView.getIsRunning()) {
+
+                    mGameView.toggleIsRunning();
+                    if(mGameView.getIsRunning()) {
                         fab.setImageResource(android.R.drawable.ic_media_pause);
                     } else {
                         fab.setImageResource(android.R.drawable.ic_media_play);
@@ -89,8 +102,16 @@ public class GameOfLifeActivity extends AppCompatActivity {
                 }
             });
 
-         }
+        }
         setModel(new GameOfLifeModel(tenInARowCellPositions));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mGameView.getIsRunning()) {
+            mGameView.toggleIsRunning();
+        }
     }
 
     @Override
