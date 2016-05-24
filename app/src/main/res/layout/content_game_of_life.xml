@@ -13,6 +13,7 @@
     tools:showIn="@layout/activity_game_of_life">
 
     <com.wsu.erikbuck.gameoflife.GameOfLifeView
+        android:id="@+id/gameoflife"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="Hello World!"

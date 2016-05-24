@@ -210,33 +210,6 @@ public class ZoomableView extends View {
 
         //We're going to scale the X and Y coordinates by the same amount
         canvas.scale(scaleFactor, scaleFactor);
-
-        //If translateX times -1 is lesser than zero, let's set it to zero. This takes care of the left bound
-        //if((translateX * -1) < 0) {
-        //    translateX = 0;
-        //}
-        /*
-        This is where we take care of the right bound. We compare translateX times -1 to (scaleFactor - 1) * displayWidth.
-        If translateX is greater than that value, then we know that we've gone over the bound. So we set the value of
-        translateX to (1 - scaleFactor) times the display width. Notice that the terms are interchanged; it's the same
-        as doing -1 * (scaleFactor - 1) * displayWidth
-        */
-        //else if((translateX * -1) > (scaleFactor - 1) * width) {
-        //    translateX = (1 - scaleFactor) * width;
-        //}
-
-        //if(translateY * -1 < 0) {
-        //    translateY = 0;
-        //}
-
-        //We do the exact same thing for the bottom bound, except in this case we use the height of the display
-        //else if((translateY * -1) > (scaleFactor - 1) * height) {
-        //    translateY = (1 - scaleFactor) * height;
-        //}
-
-        //Log.d("debug", "translateX=" + translateX + " translateY=" + translateY);
-        //We need to divide by the scale factor here, otherwise we end up with excessive panning based on our zoom level
-        //because the translation amount also gets scaled according to how much we've zoomed into the canvas.
         canvas.translate(translateX / scaleFactor, translateY / scaleFactor);
 
         // Call the onDrawScaled after any scale and translation have been performed
@@ -254,6 +227,21 @@ public class ZoomableView extends View {
         }
     }
 
+    @Override
+    public void onLayout (boolean changed,
+                               int left,
+                               int top,
+                               int right,
+                               int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        center();
+    }
+
+    public void center() {
+        translateX = (getRight() - getLeft()) * 0.5f;
+        translateY = (getBottom() - getTop()) * 0.5f;
+        this.invalidate();
+    }
 
     /**
      * Gets the example string attribute value.

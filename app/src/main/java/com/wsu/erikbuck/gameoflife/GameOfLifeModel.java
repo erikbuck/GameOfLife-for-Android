@@ -15,6 +15,12 @@ class CellCoordinate {
         this.y = y;
     }
 
+    public CellCoordinate(int xy[]) {
+        assert 2 == xy.length;
+        this.x = xy[0];
+        this.y = xy[1];
+    }
+
     public CellCoordinate(final CellCoordinate original, int dx, int dy) {
         assert null != original;
         this.x = original.x + dx;
@@ -188,6 +194,13 @@ public class GameOfLifeModel {
         this.mCells = new Hashtable<CellCoordinate, LifeCell>();
         for (CellCoordinate initialPosition : initialPositions) {
             this.spawnCellAt(initialPosition);
+        }
+    }
+
+    GameOfLifeModel(final int initialPositions[][]) {
+        this.mCells = new Hashtable<CellCoordinate, LifeCell>();
+        for (int pos[] : initialPositions) {
+            this.spawnCellAt(new CellCoordinate(pos));
         }
     }
 
