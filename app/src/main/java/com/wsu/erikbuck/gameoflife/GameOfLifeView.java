@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 /**
  * Created by erik on 5/22/16.
  */
-public class GameOfLifeView extends ZoomableView {
+public class GameOfLifeView extends PannableView {
     public static int mediumUpdatePeriodMs = 50;
 
     private static float cellSize = 45;
@@ -32,7 +32,7 @@ public class GameOfLifeView extends ZoomableView {
         public void run() {
             mView.mModel.update();
             mView.invalidate();
-            if(mView.mIsRunning) {
+            if (mView.mIsRunning) {
                 mView.mHandler.postDelayed(this, mView.mUpdatePeriodMs);
             }
         }
@@ -43,11 +43,9 @@ public class GameOfLifeView extends ZoomableView {
     public GameOfLifeView(Context context) {
         super(context);
     }
-
     public GameOfLifeView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-
     public GameOfLifeView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -61,7 +59,7 @@ public class GameOfLifeView extends ZoomableView {
         mModel = null;
         mRunnable = new Animator(this);
 
-        if(mIsRunning) {
+        if (mIsRunning) {
             mHandler.postDelayed(mRunnable, mUpdatePeriodMs);
         }
     }
@@ -69,36 +67,38 @@ public class GameOfLifeView extends ZoomableView {
     // This is a Template Method. It is called automatically after the canvas has been
     // appropriately scaled and translated.
     @Override
-    protected void onDrawScaled(Canvas canvas) {
-        float left = ((float)Math.floor((getLeft() - mTranslateX) / cellSize) - 1);
-        float top = ((float)Math.floor((getTop() - mTranslateY) / cellSize) - 1);
-        float right =  (float)Math.ceil((getRight() - mTranslateX) / cellSize);
-        float bottom =  (float)Math.ceil((getBottom() - mTranslateY) / cellSize);
+    protected void onDrawPanned(Canvas canvas) {
+        float left = ((float) Math.floor((getLeft() - getTranslationX()) / cellSize) - 1);
+        float top = ((float) Math.floor((getTop() - getTranslationY()) / cellSize) - 1);
+        float right = (float) Math.ceil((getRight() - getTranslationX()) / cellSize);
+        float bottom = (float) Math.ceil((getBottom() - getTranslationY()) / cellSize);
 
         mPaint.setStrokeWidth(3);
         mPaint.setColor(Color.GRAY);
-        for(float y = top; y <= bottom; y += 1) {
+        for (float y = top; y <= bottom; y += 1) {
             canvas.drawLine(left * cellSize, y * cellSize, right * cellSize, y * cellSize, mPaint);
         }
-        for(float x = left; x <= right; x += 1) {
+        for (float x = left; x <= right; x += 1) {
             canvas.drawLine(x * cellSize, top * cellSize, x * cellSize, bottom * cellSize, mPaint);
         }
 
         mPaint.setColor(Color.GREEN);
-        for(CellCoordinate pos : mModel.getPositions()) {
+        for (GameOfLifeModel.CellCoordinate pos : mModel.getPositions()) {
             canvas.drawCircle((pos.x + 0.5f) * cellSize, (pos.y + 0.5f) * cellSize, cellSize * 0.5f, mPaint);
         }
     }
 
+    public int getUpdatePerionMs() {
+        return mUpdatePeriodMs;
+    }
     public void setUpdatePerionMs(int someMs) {
         mUpdatePeriodMs = someMs;
     }
 
-    public boolean getIsRunning() { return mIsRunning; }
-
+    public boolean getIsRunning() { return mIsRunning;}
     public void toggleIsRunning() {
         mIsRunning = !mIsRunning;
-        if(mIsRunning) {
+        if (mIsRunning) {
             mHandler.postDelayed(mRunnable, 0);
         }
     }
