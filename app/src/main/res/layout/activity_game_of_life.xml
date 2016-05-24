@@ -23,12 +23,55 @@
 
     <include layout="@layout/content_game_of_life" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_media_play" />
+     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+         <android.support.design.widget.FloatingActionButton
+             android:id="@+id/fab"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_gravity="bottom|end"
+             android:layout_alignParentBottom="true"
+             android:layout_alignParentRight="true"
+             android:layout_marginLeft="@dimen/fab_margin"
+             android:layout_marginRight="@dimen/fab_margin"
+             android:layout_marginTop="@dimen/fab_margin"
+             android:layout_marginBottom="@dimen/fab_margin"
+             android:src="@android:drawable/ic_media_play" />
+         <TextView
+             android:id="@+id/slow"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Slow"
+             android:layout_toLeftOf="@+id/fab"
+             android:layout_alignBottom="@+id/fab"
+             android:inputType="none"
+             android:textStyle="bold"
+             android:textColor="@color/abc_primary_text_material_light" />
+          <SeekBar
+             android:id="@+id/speed_slider"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:progress="100"
+             android:max="500"
+             android:layout_marginLeft="@dimen/fab_margin"
+             android:layout_marginRight="@dimen/fab_margin"
+             android:layout_marginTop="@dimen/fab_margin"
+             android:layout_toRightOf="@+id/fast"
+             android:layout_alignBottom="@+id/fab"
+            android:layout_toLeftOf="@+id/slow" />
+         <TextView
+             android:id="@+id/fast"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Fast"
+             android:layout_alignBottom="@+id/fab"
+             android:layout_alignParentLeft="true"
+             android:inputType="none"
+             android:textStyle="bold"
+             android:textColor="@color/abc_primary_text_material_light" />
+     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
