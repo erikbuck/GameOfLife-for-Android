@@ -88,11 +88,11 @@ public class GameOfLifeView extends PanCapableView {
 
         Assert.assertTrue(null != mHandler);
         Assert.assertTrue(null != mPaint);
-        Assert.assertTrue(null != mRunnable);
+        // Assert.assertTrue(null != mRunnable); Java lint assures ALWAYS TRUE
     }
 
     /**
-     * This is a Template Method a.k.a "Hollywwod Method". See https://en.wikipedia.org/wiki/Template_method_pattern
+     * This is a Template Method. See https://en.wikipedia.org/wiki/Template_method_pattern
      * This method is called automatically after the canvas has been appropriately scaled and
      * translated.
      * <p/>
@@ -150,7 +150,7 @@ public class GameOfLifeView extends PanCapableView {
     }
 
     /**
-     * If the game is "ruuning", this method stops it from running which means automatic updating
+     * If the game is "running", this method stops it from running which means automatic updating
      * the encapsulated GameOfLifeModel stops. If the game is not running, this method resumes
      * running the game by automatic updating the encapsulated GameOfLifeModel.
      */
@@ -198,7 +198,7 @@ public class GameOfLifeView extends PanCapableView {
         Animator(GameOfLifeView view) {
             Assert.assertTrue(null != view);
             mView = view;
-            Assert.assertTrue(null != mView);
+            // Assert.assertTrue(null != mView); Java lint assures ALWAYS TRUE
         }
 
         @Override
@@ -211,7 +211,7 @@ public class GameOfLifeView extends PanCapableView {
             if (mView.mIsRunning) {
                 mView.mHandler.postDelayed(this, mView.mUpdatePeriodMs);
             }
-            Assert.assertTrue(null != mView);
+            //Assert.assertTrue(null != mView); Java lint assures ALWAYS TRUE
             Assert.assertTrue(null != mView.mModel);
             Assert.assertTrue(null != mView.mHandler);
         }

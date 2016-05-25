@@ -84,7 +84,7 @@ public class GameOfLifeActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Assert.assertTrue(null != mGameView);
-                    Assert.assertTrue(null != fab);
+                    // Assert.assertTrue(null != fab); Java lint assures ALWAYS TRUE
 
                     mGameView.toggleIsRunning();
                     if (mGameView.getIsRunning()) {

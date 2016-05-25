@@ -41,9 +41,9 @@ public class GameOfLifeModel {
     @SuppressLint("Assert")
     GameOfLifeModel(final int initialPositions[][]) {
         this.mCells = new Hashtable<>();
-        for (int coords[] : initialPositions) {
-            Assert.assertTrue(2 == coords.length);
-            this.spawnCellAt(new CellCoordinate(coords));
+        for (int coordinates[] : initialPositions) {
+            Assert.assertTrue(2 == coordinates.length);
+            this.spawnCellAt(new CellCoordinate(coordinates));
         }
         Assert.assertTrue(null != mCells);
     }
@@ -244,7 +244,7 @@ public class GameOfLifeModel {
             this.position = new CellCoordinate(position.x, position.y);
             this.status = Status.Spawning;
 
-            Assert.assertTrue(null != position);
+            // Assert.assertTrue(null != position); Java lint assures ALWAYS TRUE
         }
 
         /**

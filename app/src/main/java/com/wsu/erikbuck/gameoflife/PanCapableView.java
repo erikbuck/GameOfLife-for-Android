@@ -19,7 +19,7 @@ import junit.framework.Assert;
  * handling of view layout and re-layout by Android.
  */
 public class PanCapableView extends View {
-    private ScaleGestureDetector mDetector = new ScaleGestureDetector(getContext(),
+    private final ScaleGestureDetector mDetector = new ScaleGestureDetector(getContext(),
             new ScaleGestureDetector.SimpleOnScaleGestureListener());
 
     private float mStartX = 0f;
@@ -144,7 +144,7 @@ public class PanCapableView extends View {
     }
 
     /**
-     * This is a Template Method a.k.a "Hollywwod Method". See https://en.wikipedia.org/wiki/Template_method_pattern
+     * This is a Template Method. See https://en.wikipedia.org/wiki/Template_method_pattern
      * This method is called from onDraw() after the canvas has been appropriately scaled and
      * translated. Override this implementation to perform custom drawing in subclass
      * implementations. This implementation does nothing, and it is not necessary for overriding
