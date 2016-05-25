@@ -8,4 +8,6 @@
     <string name="action_ten_in_a_row">Ten in a row</string>
     <string name="action_pump">Tumbler</string>
     <string name="action_shooter">Gosper Glider Gun</string>
+    <string name="slow">Slow</string>
+    <string name="fast">Fast</string>
 </resources>

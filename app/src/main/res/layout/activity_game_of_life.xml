@@ -44,12 +44,11 @@
              android:id="@+id/slow"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="Slow"
+             android:text="@string/slow"
              android:layout_toLeftOf="@+id/fab"
              android:layout_alignBottom="@+id/fab"
              android:inputType="none"
-             android:textStyle="bold"
-             android:textColor="@color/abc_primary_text_material_light" />
+             android:textStyle="bold" />
           <SeekBar
              android:id="@+id/speed_slider"
              android:layout_width="wrap_content"
@@ -61,17 +60,16 @@
              android:layout_marginTop="@dimen/fab_margin"
              android:layout_toRightOf="@+id/fast"
              android:layout_alignBottom="@+id/fab"
-            android:layout_toLeftOf="@+id/slow" />
+             android:layout_toLeftOf="@+id/slow" />
          <TextView
              android:id="@+id/fast"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="Fast"
+             android:text="@string/fast"
              android:layout_alignBottom="@+id/fab"
              android:layout_alignParentLeft="true"
              android:inputType="none"
-             android:textStyle="bold"
-             android:textColor="@color/abc_primary_text_material_light" />
+             android:textStyle="bold" />
      </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

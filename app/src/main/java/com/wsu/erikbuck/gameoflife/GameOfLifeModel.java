@@ -1,5 +1,7 @@
 package com.wsu.erikbuck.gameoflife;
 
+import android.annotation.SuppressLint;
+
 import junit.framework.Assert;
 
 import java.util.ArrayList;
@@ -23,7 +25,6 @@ public class GameOfLifeModel {
 
     private void spawnCellAt(final CellCoordinate pos) {
         LifeCell newCell = new LifeCell(pos);
-        assert newCell != null;
         mCells.put(pos, newCell);
     }
 
@@ -36,6 +37,7 @@ public class GameOfLifeModel {
             this.y = y;
         }
 
+        @SuppressLint("Assert")
         public CellCoordinate(int xy[]) {
             assert 2 == xy.length;
             this.x = xy[0];
@@ -57,7 +59,9 @@ public class GameOfLifeModel {
         public int hashCode() { return this.toString().hashCode(); }
 
         @Override
-        public boolean equals(Object other) { return this.toString().equals(other.toString()); }
+        public boolean equals(Object other) {
+            return getClass() == other.getClass() && other.toString().equals(this.toString());
+        }
     }
 
     private enum Status { Alive, Spawning, Dead }
@@ -81,14 +85,15 @@ public class GameOfLifeModel {
         public int hashCode() { return position.hashCode(); }
 
         @Override
-        public boolean equals(Object other) { return this.toString().equals(other.toString()); }
+        public boolean equals(Object other) {
+            return getClass() == other.getClass() && this.toString().equals(other.toString()); }
 
         private boolean isSpawning() {
             return this.status == Status.Spawning;
         }
 
         private CellCoordinate [] getNeighbors(CellCoordinate pos) {
-            CellCoordinate neighborPositions[] = {
+            return new CellCoordinate[]{
                     new CellCoordinate(pos, -1, -1),
                     new CellCoordinate(pos, 0, -1),
                     new CellCoordinate(pos, 1, -1),
@@ -98,9 +103,9 @@ public class GameOfLifeModel {
                     new CellCoordinate(pos, 0, 1),
                     new CellCoordinate(pos, 1, 1),
             };
-            return neighborPositions;
         }
 
+        @SuppressLint("Assert")
         private int getCountOfNotSpawningNeighbors(final CellCoordinate pos, GameOfLifeModel theModel) {
             CellCoordinate neighborPositions[] = getNeighbors(pos);
 
@@ -116,6 +121,7 @@ public class GameOfLifeModel {
             return countOfNotSpawnedNeighbors;
         }
 
+        @SuppressLint("Assert")
         private void update(GameOfLifeModel theModel) {
             assert status == Status.Alive;
             assert theModel.containsKey(position);
@@ -146,29 +152,30 @@ public class GameOfLifeModel {
     }
 
     GameOfLifeModel(final int initialPositions[][]) {
-        this.mCells = new Hashtable<CellCoordinate, LifeCell>();
+        this.mCells = new Hashtable<>();
         for (int pos[] : initialPositions) {
             this.spawnCellAt(new CellCoordinate(pos));
         }
     }
 
+    @SuppressLint("Assert")
     public void update() {
-        Hashtable<CellCoordinate, LifeCell> newHashtable = new Hashtable<CellCoordinate, LifeCell>();
+        Hashtable<CellCoordinate, LifeCell> newTable = new Hashtable<>();
 
         // Convert spawning cells into alive cells and remove dead cells from game
         for (LifeCell cell : mCells.values()) {
             if (cell.status == Status.Dead) {
-                assert !newHashtable.containsKey(cell.position);
+                assert !newTable.containsKey(cell.position);
             } else {
                 cell.status = Status.Alive;
-                newHashtable.put(cell.position, cell);
+                newTable.put(cell.position, cell);
             }
         }
 
-        mCells = newHashtable;
+        mCells = newTable;
 
         // Update all the cells
-        for (LifeCell cell : new ArrayList<LifeCell>(mCells.values())) {
+        for (LifeCell cell : new ArrayList<>(mCells.values())) {
             assert cell.status == Status.Alive;
             Assert.assertTrue(mCells.containsKey(cell.position));
             cell.update(this);

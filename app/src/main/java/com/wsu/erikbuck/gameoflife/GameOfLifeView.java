@@ -10,19 +10,17 @@ import android.util.AttributeSet;
 /**
  * Created by erik on 5/22/16.
  */
-public class GameOfLifeView extends PannableView {
-    public static int mediumUpdatePeriodMs = 50;
-
-    private static float cellSize = 45;
+public class GameOfLifeView extends PanCapableView {
+    private static final int defaultUpdatePeriodMs = 50;
 
     private android.graphics.Paint mPaint;
     private GameOfLifeModel mModel;
     private Handler mHandler;
     private boolean mIsRunning;
-    private int mUpdatePeriodMs = mediumUpdatePeriodMs;
+    private int mUpdatePeriodMs = defaultUpdatePeriodMs;
 
     private static class Animator implements Runnable {
-        GameOfLifeView mView;
+        final GameOfLifeView mView;
 
         Animator(GameOfLifeView view) {
             mView = view;
@@ -38,7 +36,7 @@ public class GameOfLifeView extends PannableView {
         }
     }
 
-    Animator mRunnable;
+    private Animator mRunnable;
 
     public GameOfLifeView(Context context) {
         super(context);
@@ -68,6 +66,7 @@ public class GameOfLifeView extends PannableView {
     // appropriately scaled and translated.
     @Override
     protected void onDrawPanned(Canvas canvas) {
+        float cellSize = 45;
         float left = ((float) Math.floor((getLeft() - getTranslationX()) / cellSize) - 1);
         float top = ((float) Math.floor((getTop() - getTranslationY()) / cellSize) - 1);
         float right = (float) Math.ceil((getRight() - getTranslationX()) / cellSize);
@@ -88,10 +87,7 @@ public class GameOfLifeView extends PannableView {
         }
     }
 
-    public int getUpdatePerionMs() {
-        return mUpdatePeriodMs;
-    }
-    public void setUpdatePerionMs(int someMs) {
+    public void setUpdatePeriodMs(int someMs) {
         mUpdatePeriodMs = someMs;
     }
 

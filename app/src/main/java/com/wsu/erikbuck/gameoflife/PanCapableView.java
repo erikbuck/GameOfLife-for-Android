@@ -16,7 +16,7 @@ import android.view.View;
  * Vivin Paliath's version and now supports "inflation" from an XML layout as well as automatic
  * handling of view layout and re-layout by Android.
  */
-public class PannableView extends View {
+public class PanCapableView extends View {
     private ScaleGestureDetector mDetector;
 
     private float mStartX = 0f;
@@ -25,24 +25,23 @@ public class PannableView extends View {
     private float mTranslateY = 0f;
     private float mPreviousTranslateX = 0f;
     private float mPreviousTranslateY = 0f;
-    private boolean mIsDragging = false;
 
-    public PannableView(Context context) {
+    public PanCapableView(Context context) {
         super(context);
         init(null, 0);
     }
 
-    public PannableView(Context context, AttributeSet attrs) {
+    public PanCapableView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(attrs, 0);
     }
 
-    public PannableView(Context context, AttributeSet attrs, int defStyle) {
+    public PanCapableView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(attrs, defStyle);
     }
 
-    protected void init(AttributeSet attrs, int defStyle) {
+    void init(AttributeSet attrs, int defStyle) {
         mDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
@@ -73,14 +72,12 @@ public class PannableView extends View {
                         Math.pow(event.getY() - (mStartY + mPreviousTranslateY), 2);
 
                 if (distanceSquared > 1) {
-                    mIsDragging = true;
                     invalidate();
                 }
 
                 break;
 
             case MotionEvent.ACTION_UP:
-                mIsDragging = false;
                 mPreviousTranslateX = mTranslateX;
                 mPreviousTranslateY = mTranslateY;
                 invalidate();
@@ -94,7 +91,7 @@ public class PannableView extends View {
 
     // This is a Template Method. It is called from onDraw() after the canvas has been
     //appropriately scaled and translated. Perform custom drawing here.
-    protected void onDrawPanned(Canvas canvas) {}
+    void onDrawPanned(Canvas canvas) {}
 
     @Override
     public void onDraw(Canvas canvas) {
