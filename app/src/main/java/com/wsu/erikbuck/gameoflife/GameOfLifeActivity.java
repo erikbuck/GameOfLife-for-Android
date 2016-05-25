@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
 
+import junit.framework.Assert;
+
 import java.util.HashMap;
 
 public class GameOfLifeActivity extends AppCompatActivity {
@@ -35,10 +37,16 @@ public class GameOfLifeActivity extends AppCompatActivity {
         return map;
     }
 
+    /**
+     *
+     * @param model The model to display (cannot be null)
+     */
     private void setModel(GameOfLifeModel model) {
-        assert (null != model);
+        Assert.assertTrue(null != model);
+
         GameOfLifeView gameView = (GameOfLifeView) findViewById(R.id.gameoflife);
-        assert (null != gameView);
+
+        Assert.assertTrue(null != gameView);
         gameView.setModel(model);
         gameView.center();
     }
@@ -48,15 +56,17 @@ public class GameOfLifeActivity extends AppCompatActivity {
         super.onStart();
         setContentView(R.layout.activity_game_of_life);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Assert.assertTrue(null != toolbar);
         setSupportActionBar(toolbar);
 
         mGameView = (GameOfLifeView) findViewById(R.id.gameoflife);
-        assert null != mGameView;
+        Assert.assertTrue(null != mGameView);
 
         final SeekBar speedSlider = (SeekBar) findViewById(R.id.speed_slider);
         if (null != speedSlider) {
             speedSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    Assert.assertTrue(null != seekBar);
                     mGameView.setUpdatePeriodMs(progress);
                 }
 
@@ -73,6 +83,9 @@ public class GameOfLifeActivity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Assert.assertTrue(null != mGameView);
+                    Assert.assertTrue(null != fab);
+
                     mGameView.toggleIsRunning();
                     if (mGameView.getIsRunning()) {
                         fab.setImageResource(android.R.drawable.ic_media_pause);
@@ -84,10 +97,14 @@ public class GameOfLifeActivity extends AppCompatActivity {
 
         }
         setModel(new GameOfLifeModel(tenInARowCellPositions));
+
+        Assert.assertTrue(null != mGameView);
+        Assert.assertTrue(null != mGameView.getModel());
     }
 
     @Override
     protected void onPause() {
+        Assert.assertTrue(null != mGameView);
         super.onPause();
         if (mGameView.getIsRunning()) {
             mGameView.toggleIsRunning();
@@ -96,6 +113,7 @@ public class GameOfLifeActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Assert.assertTrue(null != menu);
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_game_of_life, menu);
         return true;
@@ -103,6 +121,7 @@ public class GameOfLifeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Assert.assertTrue(null != item);
         // Handle action bar item clicks here.
         int id = item.getItemId();
 

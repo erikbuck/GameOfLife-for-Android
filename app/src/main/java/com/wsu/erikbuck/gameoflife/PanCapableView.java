@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import junit.framework.Assert;
+
 /**
  * This class is inspired by sample code provided at
  * http://vivin.net/2011/12/04/implementing-pinch-zoom-and-pandrag-in-an-android-view-on-the-canvas/8/
@@ -30,33 +32,36 @@ public class PanCapableView extends View {
     /**
      * This constructor is only implemented because it is required by the superclass, View.
      * This implementation does nothing other than call super(context).
-     * @param context  See View(context)
+     * @param context  See View(context) (cannot be null)
      */
     public PanCapableView(Context context) {
         super(context);
+        Assert.assertTrue(null != context);
         init(null, 0);
     }
 
     /**
      * This constructor is only implemented because it is required by the superclass, View.
      * This implementation does nothing other than call super(context, attrs).
-     * @param context  See View(context, attrs)
+     * @param context  See View(context, attrs) (cannot be null)
      * @param attrs See View(context, attrs)
      */
     public PanCapableView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Assert.assertTrue(null != context);
         init(attrs, 0);
     }
 
     /**
      * This constructor is only implemented because it is required by the superclass, View.
      * This implementation does nothing other than call super(context, attrs, defStyle).
-     * @param context  See View(context, attrs, defStyle)
+     * @param context  See View(context, attrs, defStyle) (cannot be null)
      * @param attrs See View(context, attrs, defStyle)
      * @param defStyle See View(context, attrs, defStyle)
      */
     public PanCapableView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        Assert.assertTrue(null != context);
         init(attrs, defStyle);
     }
 
@@ -91,13 +96,14 @@ public class PanCapableView extends View {
 
     /**
      * Process user touch events.
-     * @param event the motion event to be processed (tyoically a finger or pointer gesture in some
+     * @param event the motion event to be processed (typically a finger or pointer gesture in some
      *              stage of completion from start through move/drag to end i.e. the finger or
-     *              pointer is no longer touching the input device)
+     *              pointer is no longer touching the input device) (cannot be null)
      * @return true if and only if the event has been processed.
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Assert.assertTrue(null != event);
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
@@ -155,10 +161,11 @@ public class PanCapableView extends View {
     /**
      * This method performs appropriate scaling and translation to implement user controlled pan
      * and then calls onDrawPanned().
-     * @param canvas The Android Canvas instance upon which drawing should occur
+     * @param canvas The Android Canvas instance upon which drawing should occur (cannot be null)
      */
     @Override
     public void onDraw(Canvas canvas) {
+        Assert.assertTrue(null != canvas);
         super.onDraw(canvas);
         canvas.save();
         canvas.translate(mTranslateX, mTranslateY);

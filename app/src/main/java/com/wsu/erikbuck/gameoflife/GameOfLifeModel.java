@@ -38,29 +38,37 @@ public class GameOfLifeModel {
      * @param initialPositions an array of arrays of integer coordinates. Each arrays of integer
      *                         coordinates must contain exactly two integers.
      */
+    @SuppressLint("Assert")
     GameOfLifeModel(final int initialPositions[][]) {
         this.mCells = new Hashtable<>();
-        for (int pos[] : initialPositions) {
-            assert 2 == pos.length;
-            this.spawnCellAt(new CellCoordinate(pos));
+        for (int coords[] : initialPositions) {
+            Assert.assertTrue(2 == coords.length);
+            this.spawnCellAt(new CellCoordinate(coords));
         }
+        Assert.assertTrue(null != mCells);
     }
 
     /**
      *
-     * @param pos a position in the game grid
+     * @param pos a position in the game grid (cannot be null)
      * @return true if there is a cell at pos and false otherwise
      */
     private boolean containsCellAt(CellCoordinate pos) {
+        Assert.assertTrue(null != pos);
+        Assert.assertTrue(null != mCells);
+
         return mCells.containsKey(pos);
     }
 
     /**
      * Returns the cell at pos if there is one and otherwise returns null.
-     * @param pos a position in the game grid
+     * @param pos a position in the game grid (cannot be null)
      * @return the cell at pos or null if there is no cell at pos
      */
     private LifeCell getCellAt(CellCoordinate pos) {
+        Assert.assertTrue(null != pos);
+        Assert.assertTrue(null != mCells);
+
         return mCells.get(pos);
     }
 
@@ -69,12 +77,19 @@ public class GameOfLifeModel {
      * that are already occupied by a cell unless the already existing cell has status Spawning.
      * In other words, replacing a Spawning cell with another Spawning cell is harmless, but any
      * other replacements are errors.
-     * @param pos the grid coordinates for the new cell.
+     * @param pos the grid coordinates for the new cell. (cannot be null)
      */
+    @SuppressLint("Assert")
     private void spawnCellAt(final CellCoordinate pos) {
-        assert !mCells.containsKey(pos) || Status.Spawning == mCells.get(pos).status;
+        Assert.assertTrue(null != mCells);
+        Assert.assertTrue(null != pos);
+        Assert.assertTrue(!mCells.containsKey(pos) || Status.Spawning == mCells.get(pos).status);
+
         LifeCell newCell = new LifeCell(pos);
         mCells.put(pos, newCell);
+
+        Assert.assertTrue(null != mCells);
+        Assert.assertTrue(mCells.containsKey(pos) && Status.Spawning == mCells.get(pos).status);
     }
 
     /**
@@ -85,12 +100,14 @@ public class GameOfLifeModel {
      */
     @SuppressLint("Assert")
     public void update() {
+        Assert.assertTrue(null != mCells);
+
         Hashtable<CellCoordinate, LifeCell> newTable = new Hashtable<>();
 
         // Convert Spawning cells into Alive cells and remove Dead cells from game grid
         for (LifeCell cell : mCells.values()) {
             if (cell.status == Status.Dead) {
-                assert !newTable.containsKey(cell.position);
+                Assert.assertTrue(!newTable.containsKey(cell.position));
             } else {
                 cell.status = Status.Alive;
                 newTable.put(cell.position, cell);
@@ -101,10 +118,11 @@ public class GameOfLifeModel {
 
         // Update all the cells
         for (LifeCell cell : new ArrayList<>(mCells.values())) {
-            assert cell.status == Status.Alive;
             Assert.assertTrue(mCells.containsKey(cell.position));
             cell.update(this);
         }
+
+        Assert.assertTrue(null != mCells);
     }
 
     /**
@@ -145,7 +163,8 @@ public class GameOfLifeModel {
          */
         @SuppressLint("Assert")
         public CellCoordinate(int xy[]) {
-            assert 2 == xy.length;
+            Assert.assertTrue(2 == xy.length);
+
             this.x = xy[0];
             this.y = xy[1];
         }
@@ -153,12 +172,13 @@ public class GameOfLifeModel {
         /**
          * Constructs a new CellCoordinate with x equal to original.x + dx and y equal to
          * original.y + dy.
-         * @param original A CellCoordinate that may not be null
+         * @param original A CellCoordinate that (cannot be null)
          * @param dx arbitrary delta added to original.x
          * @param dy arbitrary delta added to original.y
          */
         public CellCoordinate(final CellCoordinate original, int dx, int dy) {
-            assert null != original;
+            Assert.assertTrue(null != original);
+
             this.x = original.x + dx;
             this.y = original.y + dy;
         }
@@ -187,15 +207,17 @@ public class GameOfLifeModel {
         /**
          * Indicates whether some other object is "equal to" this one. Note: It is required that
          * any two objects that are equal return the same value from hashCode().
-         * @param other the object to compare to teh receiver.
+         * @param other the object to compare to the receiver.
          * @return true if the receiver and other are equal to each other and false otherwise.
          */
+        @SuppressLint("Assert")
         @Override
         public boolean equals(Object other) {
             boolean result = (other != null &&
                     getClass() == other.getClass() &&
                     other.toString().equals(this.toString()));
-            assert !result || hashCode() == other.hashCode();
+
+            Assert.assertTrue(!result || hashCode() == other.hashCode());
             return result;
         }
     }
@@ -217,9 +239,12 @@ public class GameOfLifeModel {
          * @param position game grid coordinates for the new cell
          */
         public LifeCell(final CellCoordinate position) {
-            assert null != position;
+            Assert.assertTrue(null != position);
+
             this.position = new CellCoordinate(position.x, position.y);
             this.status = Status.Spawning;
+
+            Assert.assertTrue(null != position);
         }
 
         /**
@@ -246,13 +271,14 @@ public class GameOfLifeModel {
          * @param other the object to compare to teh receiver.
          * @return true if the receiver and other are equal to each other and false otherwise.
          */
+        @SuppressLint("Assert")
         @Override
         public boolean equals(Object other) {
-            boolean result = (other != null &&
+             boolean result = (other != null &&
                     getClass() == other.getClass() &&
                     this.toString().equals(other.toString()));
 
-            assert !result || hashCode() == other.hashCode();
+            Assert.assertTrue(!result || hashCode() == other.hashCode());
             return result;
         }
 
@@ -266,6 +292,8 @@ public class GameOfLifeModel {
          * @return an array of all positions considered adjacent to pos
          */
         private CellCoordinate[] getNeighbors(CellCoordinate pos) {
+            Assert.assertTrue(null != pos);
+
             return new CellCoordinate[]{
                     new CellCoordinate(pos, -1, -1),
                     new CellCoordinate(pos, 0, -1),
@@ -280,24 +308,26 @@ public class GameOfLifeModel {
 
         /**
          *
-         * @param pos a position in the game grid
-         * @param theModel object that encapsulates the game grid
+         * @param pos a position in the game grid (cannot be null)
+         * @param theModel object that encapsulates the game grid (cannot be null)
          * @return the number positions considered adjacent to pos in theModel that do not contain
-         * spawning cells.
+         * spawning cells. 0 <= positions <= 8
          */
         @SuppressLint("Assert")
         private int getCountOfNotSpawningNeighbors(final CellCoordinate pos, GameOfLifeModel theModel) {
+            Assert.assertTrue(null != pos);
+            Assert.assertTrue(null != theModel);
+
             CellCoordinate neighborPositions[] = getNeighbors(pos);
 
             int countOfNotSpawnedNeighbors = 0;
             for (CellCoordinate nextPos : neighborPositions) {
-                assert theModel.containsCellAt(nextPos);
-
-                if (theModel.containsCellAt(nextPos) && !theModel.getCellAt(nextPos).isSpawning()) {
+                 if (theModel.containsCellAt(nextPos) && !theModel.getCellAt(nextPos).isSpawning()) {
                     countOfNotSpawnedNeighbors += 1;
                 }
             }
 
+            Assert.assertTrue(0 <= countOfNotSpawnedNeighbors && 8 >= countOfNotSpawnedNeighbors);
             return countOfNotSpawnedNeighbors;
         }
 
@@ -306,12 +336,12 @@ public class GameOfLifeModel {
          * cell's environment encapsulated by theModel. Specifically, theModel is used to identify
          * neighboring cells to the cell being updated. The spawnCellAt() method of theModel may be
          * called as a side effect.
-         * @param theModel The model to me evaluated by the cell so that the cell can
+         * @param theModel The model to me evaluated by the cell so that the cell can (cannot be null)
          */
         @SuppressLint("Assert")
         private void update(GameOfLifeModel theModel) {
-            assert status == Status.Alive;
-            assert theModel.containsCellAt(position);
+            Assert.assertTrue(null != theModel);
+            Assert.assertTrue(status == Status.Alive);
             Assert.assertTrue(theModel.containsCellAt(position));
 
             CellCoordinate neighborPositions[] = getNeighbors(position);
