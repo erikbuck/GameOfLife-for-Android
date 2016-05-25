@@ -20,6 +20,7 @@ public class GameOfLifeActivity extends AppCompatActivity {
     private static final int pumpCellPositions[][] = {{0, 3}, {0, 4}, {0, 5}, {1, 0}, {1, 1}, {1, 5}, {2, 0}, {2, 1}, {2, 2}, {2, 3}, {2, 4}, {4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4}, {5, 0}, {5, 1}, {5, 5}, {6, 3}, {6, 4}, {6, 5},};
     private static final int shooterCellPositions[][] = {{0, 2}, {0, 3}, {1, 2}, {1, 3}, {8, 3}, {8, 4}, {9, 2}, {9, 4}, {10, 2}, {10, 3}, {16, 4}, {16, 5}, {16, 6}, {17, 4}, {18, 5}, {22, 1}, {22, 2}, {23, 0}, {23, 2}, {24, 0}, {24, 1}, {24, 12}, {24, 13}, {25, 12}, {25, 14}, {26, 12}, {34, 0}, {34, 1}, {35, 0}, {35, 1}, {35, 7}, {35, 8}, {35, 9}, {36, 7}, {37, 8},};
     private static final int clearCellPositions[][] = {};
+    private GameOfLifeView mGameView;
 
     private static HashMap<Integer, int[][]> initialCellPositions() {
         final HashMap<Integer, int[][]> map = new HashMap<>();
@@ -41,8 +42,6 @@ public class GameOfLifeActivity extends AppCompatActivity {
         gameView.setModel(model);
         gameView.center();
     }
-
-    private GameOfLifeView mGameView;
 
     @Override
     protected void onStart() {

@@ -17,7 +17,8 @@ import android.view.View;
  * handling of view layout and re-layout by Android.
  */
 public class PanCapableView extends View {
-    private ScaleGestureDetector mDetector;
+    private ScaleGestureDetector mDetector = new ScaleGestureDetector(getContext(),
+            new ScaleGestureDetector.SimpleOnScaleGestureListener());
 
     private float mStartX = 0f;
     private float mStartY = 0f;
@@ -26,28 +27,75 @@ public class PanCapableView extends View {
     private float mPreviousTranslateX = 0f;
     private float mPreviousTranslateY = 0f;
 
+    /**
+     * This constructor is only implemented because it is required by the superclass, View.
+     * This implementation does nothing other than call super(context).
+     * @param context  See View(context)
+     */
     public PanCapableView(Context context) {
         super(context);
         init(null, 0);
     }
 
+    /**
+     * This constructor is only implemented because it is required by the superclass, View.
+     * This implementation does nothing other than call super(context, attrs).
+     * @param context  See View(context, attrs)
+     * @param attrs See View(context, attrs)
+     */
     public PanCapableView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(attrs, 0);
     }
 
+    /**
+     * This constructor is only implemented because it is required by the superclass, View.
+     * This implementation does nothing other than call super(context, attrs, defStyle).
+     * @param context  See View(context, attrs, defStyle)
+     * @param attrs See View(context, attrs, defStyle)
+     * @param defStyle See View(context, attrs, defStyle)
+     */
     public PanCapableView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(attrs, defStyle);
     }
 
+    /**
+     * Subclasses should override this method to perform instance initialization as opposed to
+     * performing initialization within a constructor. This is a design pattern required by
+     * the Android View class. Any implementation that overrides this method MUST call this
+     * implementation via super.init(attrs, defStyle).
+     * @param attrs See View init(AttributeSet attrs, int defStyle)
+     * @param defStyle See View init(AttributeSet attrs, int defStyle)
+     */
     void init(AttributeSet attrs, int defStyle) {
-        mDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
-    public float getTranslationX() { return mTranslateX; }
-    public float getTranslationY() { return mTranslateY; }
+    /**
+     *
+     * @return The current amount of translation along the X axis applied to implement user gesture
+     * controlled pan.
+     */
+    public float getTranslationX() {
+        return mTranslateX;
+    }
 
+    /**
+     *
+     * @return The current amount of translation along the Y axis applied to implement user gesture
+     * controlled pan.
+     */
+    public float getTranslationY() {
+        return mTranslateY;
+    }
+
+    /**
+     * Process user touch events.
+     * @param event the motion event to be processed (tyoically a finger or pointer gesture in some
+     *              stage of completion from start through move/drag to end i.e. the finger or
+     *              pointer is no longer touching the input device)
+     * @return true if and only if the event has been processed.
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
@@ -89,10 +137,26 @@ public class PanCapableView extends View {
         return true;
     }
 
-    // This is a Template Method. It is called from onDraw() after the canvas has been
-    //appropriately scaled and translated. Perform custom drawing here.
-    void onDrawPanned(Canvas canvas) {}
+    /**
+     * This is a Template Method a.k.a "Hollywwod Method". See https://en.wikipedia.org/wiki/Template_method_pattern
+     * This method is called from onDraw() after the canvas has been appropriately scaled and
+     * translated. Override this implementation to perform custom drawing in subclass
+     * implementations. This implementation does nothing, and it is not necessary for overriding
+     * implementations to call this implementation.
+     *
+     * Note: as with all Template Methods, this method should not be called from any place other
+     * than the implementation of this class. This method is called automatically when appropriate.
+     *
+     * @param canvas The Android Canvas instance upon which drawing should occur
+     */
+    void onDrawPanned(Canvas canvas) {
+    }
 
+    /**
+     * This method performs appropriate scaling and translation to implement user controlled pan
+     * and then calls onDrawPanned().
+     * @param canvas The Android Canvas instance upon which drawing should occur
+     */
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -104,19 +168,25 @@ public class PanCapableView extends View {
         canvas.restore();
     }
 
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            return true;
-        }
-    }
-
+    /**
+     * This implementation calls the superclass's implementation and then calls center().
+     * @param changed See View.onLayout()
+     * @param left See View.onLayout()
+     * @param top See View.onLayout()
+     * @param right See View.onLayout()
+     * @param bottom See View.onLayout()
+     */
     @Override
-    public void onLayout(boolean changed, int left, int top, int right,  int bottom) {
+    public void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         center();
     }
 
+    /**
+     * This method "centers" the user controlled pan by updating encapsulated translation amounts so
+     * that the next time onDrawPanned(canvas) is called, to canvas origin is centered in the
+     * rectangle defined by getRight(), getLeft(), getBottom(), and getTop().
+     */
     public void center() {
         mTranslateX = (getRight() - getLeft()) * 0.5f;
         mTranslateY = (getBottom() - getTop()) * 0.5f;
@@ -124,5 +194,4 @@ public class PanCapableView extends View {
         mPreviousTranslateY = mTranslateY;
         this.invalidate();
     }
-
-}
+ }
