@@ -133,7 +133,7 @@ public class PanCapableView extends View {
                         Math.pow(event.getY() - (mStartY + mPreviousTranslateY), 2);
 
                 if (distanceSquared > 1) {
-                    invalidate();
+                    invalidate(); // The translation has changed enough to warrant redrawing
                 }
 
                 break;
@@ -173,6 +173,7 @@ public class PanCapableView extends View {
     @Override
     public void onDraw(Canvas canvas) {
         if(BuildConfig.DEBUG) assertTrue(null != canvas);
+
         super.onDraw(canvas);
         canvas.save();
         canvas.translate(mTranslateX, mTranslateY);

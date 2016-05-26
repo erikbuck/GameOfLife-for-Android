@@ -80,6 +80,9 @@ public class GameOfLifeView extends PanCapableView {
      * the Android View class. Any implementation that overrides this method MUST call this
      * implementation via super.init(attrs, defStyle).
      *
+     * When this method returns, the encapsulated model is null, and the GAmeOfLifeView is not
+     * running.
+     *
      * @param attrs    See View init(AttributeSet attrs, int defStyle)
      * @param defStyle See View init(AttributeSet attrs, int defStyle)
      */
@@ -94,7 +97,9 @@ public class GameOfLifeView extends PanCapableView {
 
         if(BuildConfig.DEBUG) assertTrue(null != mHandler);
         if(BuildConfig.DEBUG) assertTrue(null != mPaint);
-        // if(BuildConfig.DEBUG) assertTrue(null != mRunnable); Java lint assures ALWAYS TRUE
+        // if(BuildConfig.DEBUG) assertTrue(null != mRunnable); // Java lint assures me this is ALWAYS TRUE
+        if(BuildConfig.DEBUG) assertTrue(mModel == null);
+        if(BuildConfig.DEBUG) assertTrue(!mIsRunning);
     }
 
     /**
@@ -106,14 +111,28 @@ public class GameOfLifeView extends PanCapableView {
      * than the implementation of this class. Any override of this method MUST call this
      * implementation.
      *
+     * This implementation draws the GameOfLifeView's model. This method does not mutate the model
+     * or change the values of any the GameOfLifeView's instance variables.
+     *
      * @param canvas The already scaled and translated Android Canvas instance upon which drawing
-     *               should occur
+     *               should occur. This method may mutate the canvas.
      */
     @Override
     protected void onDrawPanned(Canvas canvas) {
         if(BuildConfig.DEBUG) assertTrue(null != canvas);
         if(BuildConfig.DEBUG) assertTrue(null != mPaint);
         if(BuildConfig.DEBUG) assertTrue(null != mModel);
+        android.graphics.Paint mPaint_pre = mPaint;  // only used to check post-conditions
+        GameOfLifeModel mModel_pre = mModel;  // only used to check post-conditions
+        Handler mHandler_pre = mHandler;  // only used to check post-conditions
+        boolean mIsRunning_pre = mIsRunning;  // only used to check post-conditions
+        Animator mRunnable_pre = mRunnable;  // only used to check post-conditions
+        int mUpdatePeriodMs_pre = mUpdatePeriodMs;  // only used to check post-conditions
+        GameOfLifeModel model_pre = null;  // only used to check post-conditions
+        if(BuildConfig.DEBUG) model_pre = getModel().debugClone();
+
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
         float cellSize = 45;
         float left = ((float) Math.floor((getLeft() - getTranslationX()) / cellSize) - 1);
         float top = ((float) Math.floor((getTop() - getTranslationY()) / cellSize) - 1);
@@ -134,17 +153,36 @@ public class GameOfLifeView extends PanCapableView {
             canvas.drawCircle((pos.getX() + 0.5f) * cellSize, (pos.getY() + 0.5f) * cellSize,
                     cellSize * 0.5f, mPaint);
         }
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
+
+        if(BuildConfig.DEBUG) assertTrue(getModel().debugEquals(model_pre));
+        if(BuildConfig.DEBUG) assertTrue(mPaint_pre == mPaint);
+        if(BuildConfig.DEBUG) assertTrue(mModel_pre == mModel);
+        if(BuildConfig.DEBUG) assertTrue(mHandler_pre == mHandler);
+        if(BuildConfig.DEBUG) assertTrue(mIsRunning_pre == mIsRunning);
+        if(BuildConfig.DEBUG) assertTrue(mRunnable_pre == mRunnable);
+        if(BuildConfig.DEBUG) assertTrue(mUpdatePeriodMs_pre == mUpdatePeriodMs);
     }
 
     /**
      * Set the amount of time in milliseconds that should elapse between automatic updates of the
      * encapsulated GameOfLifeModel instance. Note: This update period is only used when the game
-     * is "running".
+     * is "running". This method does not mutate the encapsulated GameOfLifeModel instance.
      *
      * @param someMs The number of milliseconds between encapsulated GameOfLifeModel instance updates.
      */
     public void setUpdatePeriodMs(int someMs) {
+        GameOfLifeModel model_pre = null;
+        if(BuildConfig.DEBUG) model_pre = getModel().debugClone();  // only used to check post-conditions
+
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
         mUpdatePeriodMs = someMs;
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
+
+        if(BuildConfig.DEBUG) assertTrue(getModel().debugEquals(model_pre));
     }
 
     /**
@@ -161,14 +199,19 @@ public class GameOfLifeView extends PanCapableView {
      * running the game by automatic updating the encapsulated GameOfLifeModel.
      */
     public void toggleIsRunning() {
-        boolean isRunning_pre = mIsRunning;
+        boolean isRunning_pre = mIsRunning;  // only used to check post-conditions
         if(BuildConfig.DEBUG) assertTrue(null != mHandler);
         if(BuildConfig.DEBUG) assertTrue(null != mRunnable);
 
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
         mIsRunning = !mIsRunning;
         if (mIsRunning) {
             mHandler.postDelayed(mRunnable, 0);
         }
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
+
         if(BuildConfig.DEBUG) assertTrue(null != mHandler);
         if(BuildConfig.DEBUG) assertTrue(null != mRunnable);
         if(BuildConfig.DEBUG) assertTrue(isRunning_pre != mIsRunning);
@@ -189,8 +232,14 @@ public class GameOfLifeView extends PanCapableView {
      */
     public void setModel(GameOfLifeModel model) {
         if(BuildConfig.DEBUG) assertTrue(null != model);
+
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
         mModel = model;
         this.invalidate();
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
+
         if(BuildConfig.DEBUG) assertTrue(null != mModel);
     }
 
@@ -204,7 +253,13 @@ public class GameOfLifeView extends PanCapableView {
 
         Animator(GameOfLifeView view) {
             if(BuildConfig.DEBUG) assertTrue(null != view);
+
+            /////////////////////////////////////////////////////////////////
+            /// Begin actual real implementation of method
             mView = view;
+            /// End actual real implementation of method
+            /////////////////////////////////////////////////////////////////
+
             // if(BuildConfig.DEBUG) assertTrue(null != mView); Java lint assures ALWAYS TRUE
         }
 
@@ -213,11 +268,17 @@ public class GameOfLifeView extends PanCapableView {
             if(BuildConfig.DEBUG) assertTrue(null != mView);
             if(BuildConfig.DEBUG) assertTrue(null != mView.mModel);
             if(BuildConfig.DEBUG) assertTrue(null != mView.mHandler);
+
+            /////////////////////////////////////////////////////////////////
+            /// Begin actual real implementation of method
             mView.mModel.update();
             mView.invalidate();
             if (mView.mIsRunning) {
                 mView.mHandler.postDelayed(this, mView.mUpdatePeriodMs);
             }
+            /// End actual real implementation of method
+            /////////////////////////////////////////////////////////////////
+
             //if(BuildConfig.DEBUG) assertTrue(null != mView); Java lint assures ALWAYS TRUE
             if(BuildConfig.DEBUG) assertTrue(null != mView.mModel);
             if(BuildConfig.DEBUG) assertTrue(null != mView.mHandler);
