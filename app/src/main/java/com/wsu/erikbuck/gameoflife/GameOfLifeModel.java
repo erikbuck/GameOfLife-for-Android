@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 import static junit.framework.Assert.assertTrue;
@@ -39,21 +40,75 @@ import static junit.framework.Assert.assertTrue;
 public class GameOfLifeModel {
     private Hashtable<CellCoordinate, LifeCell> mCells;
 
-    // This inner class exists only to enable pre and post condition verification.
-    class DataCopyHashtable {
+    /**
+     *  This inner class exists only to enable pre and post condition verification.
+     */
+    class DataCopyTable {
         private final Hashtable<CellCoordinate, LifeCell> tableCopy;
 
-        DataCopyHashtable() {
+        DataCopyTable() {
             //noinspection unchecked
-            tableCopy = (Hashtable<CellCoordinate, LifeCell>)mCells.clone();
+            tableCopy = (Hashtable<CellCoordinate, LifeCell>) mCells.clone();
         }
 
         boolean doesMatch(Hashtable<CellCoordinate, LifeCell> table) {
             return tableCopy.equals(table);
         }
+
+        boolean tableContainsEverything(Hashtable<CellCoordinate, LifeCell> table) {
+            return table.entrySet().containsAll(tableCopy.entrySet());
+        }
+
+        boolean everythingInTableHasStateAlive(Hashtable<CellCoordinate, LifeCell> table) {
+            for (Map.Entry<CellCoordinate, LifeCell> entry : table.entrySet()) {
+                if (entry.getValue().status != Status.Alive) return false;
+            }
+            return true;
+        }
+
+        boolean everythingAddedHasStateSpawning(Hashtable<CellCoordinate, LifeCell> table) {
+            @SuppressWarnings("unchecked") Set<Map.Entry<CellCoordinate, LifeCell>> set =
+                    ((Hashtable<CellCoordinate, LifeCell>) table.clone()).entrySet();
+
+            // Make set into asymmetric set difference of the two sets.
+            set.removeAll(tableCopy.entrySet());
+
+            // Everything left should have state == Spawning.
+            for (Map.Entry<CellCoordinate, LifeCell> entry : set) {
+                if (entry.getValue().status != Status.Spawning) return false;
+            }
+            return true;
+        }
+
+        boolean everythingNotInTableHasStateDead(Hashtable<CellCoordinate, LifeCell> table) {
+            Set<Map.Entry<CellCoordinate, LifeCell>> set = tableCopy.entrySet();
+
+            // Make set into asymmetric set difference of the two sets.
+            set.removeAll(table.entrySet());
+
+            // Everything left should have state == Dead.
+            for (Map.Entry<CellCoordinate, LifeCell> entry : set) {
+                if (entry.getValue().status != Status.Dead) return false;
+            }
+            return true;
+        }
+
+        boolean everythingNotDeadIsInTable(Hashtable<CellCoordinate, LifeCell> table) {
+            Set<Map.Entry<CellCoordinate, LifeCell>> set = tableCopy.entrySet();
+
+            for (Map.Entry<CellCoordinate, LifeCell> entry : set) {
+                if (entry.getValue().status != Status.Dead
+                        && !table.contains(entry.getKey())) {
+                    return false;
+                }
+             }
+            return true;
+        }
     }
 
-    // This inner class exists only to enable pre and post condition verification.
+    /**
+     *  This inner class exists only to enable pre and post condition verification.
+     */
     class DataCopyPositions {
         private final int[][] arrayCopy;
 
@@ -92,9 +147,10 @@ public class GameOfLifeModel {
      */
     @SuppressLint("assert")
     GameOfLifeModel(final int initialPositions[][]) {
-        DataCopyPositions copy = null; // Pointless local variable only used to check post-conditions
-        // Always succeeds; has side effect of saving a copy of array
-        if(BuildConfig.DEBUG) assertTrue((copy = new DataCopyPositions(initialPositions)) != null);
+        DataCopyPositions mCells_pre = null; // Pointless local variable only used to check post-conditions
+        // Always succeeds; has side effect of saving a mCells_pre of array
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue((mCells_pre = new DataCopyPositions(initialPositions)) != null);
 
         /////////////////////////////////////////////////////////////////
         /// Begin actual real implementation of method
@@ -108,21 +164,25 @@ public class GameOfLifeModel {
         /////////////////////////////////////////////////////////////////
 
         if(BuildConfig.DEBUG) assertTrue(null != mCells);
-        if(BuildConfig.DEBUG) assertTrue(copy.doesMatch(initialPositions)); // initialPositions was not mutated
-        if(BuildConfig.DEBUG) assertTrue(copy.everythingIsInTable(mCells)); // Every position in copy is in mCells
-        if(BuildConfig.DEBUG) assertTrue(copy.containsEverythingInTable(mCells)); // Every position in mCells is in copy
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.doesMatch(initialPositions)); // initialPositions was not mutated
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.everythingIsInTable(mCells)); // Every position in mCells_pre is in mCells
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.containsEverythingInTable(mCells)); // Every position in mCells is in mCells_pre
     }
 
     /**
+     * This method does not change the game model's internal state.
      * @param pos a position in the game grid (cannot be null)
      * @return true if there is a cell at pos and false otherwise
      */
     private boolean containsCellAt(CellCoordinate pos) {
         if(BuildConfig.DEBUG) assertTrue(null != pos);
         if(BuildConfig.DEBUG) assertTrue(null != mCells);
-
-        DataCopyHashtable copy = null; // Pointless local variable only used to check post-conditions
-        if(BuildConfig.DEBUG) assertTrue((copy = new DataCopyHashtable()) != null); // Always succeeds; has side effect of saving a copy of array
+        DataCopyTable mCells_pre = null; // Pointless local variable only used to check post-conditions
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue((mCells_pre = new DataCopyTable()) != null); // Always succeeds; has side effect of saving a mCells_pre of array
 
         /////////////////////////////////////////////////////////////////
         /// Begin actual real implementation of method
@@ -131,12 +191,14 @@ public class GameOfLifeModel {
         /////////////////////////////////////////////////////////////////
 
         if(BuildConfig.DEBUG) assertTrue(null != mCells);
-        if(BuildConfig.DEBUG) assertTrue(copy.doesMatch(mCells)); // mCells was not mutated
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.doesMatch(mCells)); // mCells was not mutated
         return result;
     }
 
     /**
-     * Returns the cell at pos if there is one and otherwise returns null.
+     * Returns the cell at pos if there is one and otherwise returns null. This method does not
+     * change the game model's internal state.
      *
      * @param pos a position in the game grid (cannot be null)
      * @return the cell at pos or null if there is no cell at pos
@@ -144,8 +206,20 @@ public class GameOfLifeModel {
     private LifeCell getCellAt(CellCoordinate pos) {
         if(BuildConfig.DEBUG) assertTrue(null != pos);
         if(BuildConfig.DEBUG) assertTrue(null != mCells);
+        DataCopyTable mCells_pre = null; // Pointless local variable only used to check post-conditions
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue((mCells_pre = new DataCopyTable()) != null); // Always succeeds; has side effect of saving a mCells_pre of array
 
-        return mCells.get(pos);
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
+        LifeCell result = mCells.get(pos);
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
+
+        if(BuildConfig.DEBUG) assertTrue(null != mCells);
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.doesMatch(mCells)); // mCells was not mutated
+        return result;
     }
 
     /**
@@ -161,26 +235,33 @@ public class GameOfLifeModel {
         if(BuildConfig.DEBUG) assertTrue(null != mCells);
         if(BuildConfig.DEBUG) assertTrue(null != pos);
         if(BuildConfig.DEBUG) assertTrue(!mCells.containsKey(pos) || Status.Spawning == mCells.get(pos).status);
+        DataCopyTable mCells_pre = null; // Pointless local variable only used to check post-conditions
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue((mCells_pre = new DataCopyTable()) != null); // Always succeeds; has side effect of saving a mCells_pre of array
 
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
         LifeCell newCell = new LifeCell(pos);
         mCells.put(pos, newCell);
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
 
         if(BuildConfig.DEBUG) assertTrue(null != mCells);
         if(BuildConfig.DEBUG) assertTrue(mCells.containsKey(pos) && Status.Spawning == mCells.get(pos).status);
-    }
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.tableContainsEverything(mCells));
+     }
 
-    /**
-     * Update the state of all encapsulated cells. As each cell is updated, the cell applies the
-     * logic (rules) of the Game of Life based on the presence or absence of cells in adjacent grid
-     * positions to the cell being updated. Cells change their respective internal states, and
-     * may call the private spawnCellAt() of this class.
-     */
-    @SuppressLint("assert")
-    public void update() {
+    private void removeDeadAndFinishSpawning() {
         if(BuildConfig.DEBUG) assertTrue(null != mCells);
+        DataCopyTable mCells_pre = null; // Pointless local variable only used to check post-conditions
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            mCells_pre = new DataCopyTable();
 
         Hashtable<CellCoordinate, LifeCell> newTable = new Hashtable<>();
 
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
         // Convert Spawning cells into Alive cells and remove Dead cells from game grid
         for (LifeCell cell : mCells.values()) {
             if (cell.status == Status.Dead) {
@@ -192,23 +273,73 @@ public class GameOfLifeModel {
         }
 
         mCells = newTable;
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
 
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.everythingNotInTableHasStateDead(mCells));
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.everythingNotDeadIsInTable(mCells));
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.everythingInTableHasStateAlive(mCells));
+    }
+    /**
+     * Update the state of all encapsulated cells. As each cell is updated, the cell applies the
+     * logic (rules) of the Game of Life based on the presence or absence of cells in adjacent grid
+     * positions to the cell being updated. Cells change their respective internal states, and
+     * may call the private spawnCellAt() of this class.
+     */
+    @SuppressLint("assert")
+    public void update() {
+        if(BuildConfig.DEBUG) assertTrue(null != mCells);
+
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
+        removeDeadAndFinishSpawning();
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
+
+        DataCopyTable mCells_pre = null; // Pointless local variable only used to check post-conditions
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue((mCells_pre = new DataCopyTable()) != null); // Always succeeds; has side effect of saving a mCells_pre of array
+
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
         // Update all the cells
         for (LifeCell cell : new ArrayList<>(mCells.values())) {
-            if(BuildConfig.DEBUG) assertTrue(mCells.containsKey(cell.position));
             cell.update(this);
         }
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
 
         if(BuildConfig.DEBUG) assertTrue(null != mCells);
-    }
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.everythingAddedHasStateSpawning(mCells));
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.tableContainsEverything(mCells)); // Nothing was removed
+     }
 
     /**
-     * @return A Set view of the CellCoordinates occupied by cells. Note: CellCoordinate instances
+     * @return A Set view of the CellCoordinates occupied by cells.  This method does not mutate
+     * the GameOfLifeModel object. Note: CellCoordinate instances
      * are immutable. The position of a cell cannot be changed once the cell is constructed. There
      * is no way to mutate cells using the Set returned by this method.
      */
     public Collection<CellCoordinate> getPositions() {
-        return this.mCells.keySet();
+        DataCopyTable mCells_pre = null; // Pointless local variable only used to check post-conditions
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue((mCells_pre = new DataCopyTable()) != null); // Always succeeds; has side effect of saving a mCells_pre of array
+
+
+        /////////////////////////////////////////////////////////////////
+        /// Begin actual real implementation of method
+        Collection<CellCoordinate> result = this.mCells.keySet();
+        /// End actual real implementation of method
+        /////////////////////////////////////////////////////////////////
+
+        if(BuildConfig.DEBUG) //noinspection ConstantConditions
+            assertTrue(mCells_pre.doesMatch(mCells)); // mCells was not mutated
+        return result;
     }
 
     /**
@@ -235,6 +366,8 @@ public class GameOfLifeModel {
         public CellCoordinate(int x, int y) {
             this.x = x;
             this.y = y;
+
+            // There are no post conditions except those enforced by Java
         }
 
         /**
@@ -248,6 +381,8 @@ public class GameOfLifeModel {
 
             this.x = xy[0];
             this.y = xy[1];
+
+            // There are no post conditions except those enforced by Java
         }
 
         /**
@@ -263,6 +398,8 @@ public class GameOfLifeModel {
 
             this.x = original.x + dx;
             this.y = original.y + dy;
+
+            // There are no post conditions except those enforced by Java
         }
 
         public int getX() {
