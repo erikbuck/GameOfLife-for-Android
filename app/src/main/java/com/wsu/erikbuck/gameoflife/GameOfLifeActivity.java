@@ -12,6 +12,13 @@ import java.util.HashMap;
 
 import static junit.framework.Assert.*;
 
+/**
+ * This is the main Activity for the application. It interacts with the GameOfLifeModel and one or
+ * more Android.View instances.
+ *
+ * @author Erik M. Buck
+ * @version %G%
+ */
 public class GameOfLifeActivity extends AppCompatActivity {
 
     private static final int[][] gliderCellPositions = {{1, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2},};

@@ -17,6 +17,9 @@ import static junit.framework.Assert.assertTrue;
  * This class implements pan gesture handling. It has been greatly simplified and modernized from
  * Vivin Paliath's version and now supports "inflation" from an XML layout as well as automatic
  * handling of view layout and re-layout by Android.
+ *
+ * @author Erik M. Buck
+ * @version %G%
  */
 public class PanCapableView extends View {
     private final ScaleGestureDetector mDetector = new ScaleGestureDetector(getContext(),

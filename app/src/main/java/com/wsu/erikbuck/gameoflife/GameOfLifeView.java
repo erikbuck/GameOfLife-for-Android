@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import static junit.framework.Assert.assertTrue;
 
 /**
- * Created by erik on 5/22/16.
  * Each instance of this class encapsulates and instance of GameOfLifeModel and displays the current
  * state of the encapsulated GameOfLifeModel each time the onDrawPanned() method is called. Note:
  * onDrawPanned() is called automatically by the superclass, PanCapableView, and should not be
@@ -21,6 +20,9 @@ import static junit.framework.Assert.assertTrue;
  * method. The frequency of the calls is determined by the update period in milliseconds specified
  * using the setUpdatePeriodMs() method and whether the GameOfLifeView is "running". If
  * setUpdatePeriodMs() is not called, a reasonable default update period is used.
+ *
+ * @author Erik M. Buck
+ * @version %G%
  */
 public class GameOfLifeView extends PanCapableView {
     private static final int defaultUpdatePeriodMs = 50;
