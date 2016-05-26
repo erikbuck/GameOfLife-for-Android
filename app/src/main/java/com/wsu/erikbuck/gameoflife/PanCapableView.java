@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
-import junit.framework.Assert;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * This class is inspired by sample code provided at
@@ -36,7 +36,7 @@ public class PanCapableView extends View {
      */
     public PanCapableView(Context context) {
         super(context);
-        Assert.assertTrue(null != context);
+        if(BuildConfig.DEBUG) assertTrue(null != context);
         init(null, 0);
     }
 
@@ -48,7 +48,7 @@ public class PanCapableView extends View {
      */
     public PanCapableView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Assert.assertTrue(null != context);
+        if(BuildConfig.DEBUG) assertTrue(null != context);
         init(attrs, 0);
     }
 
@@ -61,7 +61,7 @@ public class PanCapableView extends View {
      */
     public PanCapableView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        Assert.assertTrue(null != context);
+        if(BuildConfig.DEBUG) assertTrue(null != context);
         init(attrs, defStyle);
     }
 
@@ -103,7 +103,7 @@ public class PanCapableView extends View {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Assert.assertTrue(null != event);
+        if(BuildConfig.DEBUG) assertTrue(null != event);
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
@@ -165,7 +165,7 @@ public class PanCapableView extends View {
      */
     @Override
     public void onDraw(Canvas canvas) {
-        Assert.assertTrue(null != canvas);
+        if(BuildConfig.DEBUG) assertTrue(null != canvas);
         super.onDraw(canvas);
         canvas.save();
         canvas.translate(mTranslateX, mTranslateY);

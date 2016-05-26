@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.util.AttributeSet;
 
-import junit.framework.Assert;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by erik on 5/22/16.
@@ -32,7 +32,7 @@ public class GameOfLifeView extends PanCapableView {
     private int mUpdatePeriodMs = defaultUpdatePeriodMs;
     private Animator mRunnable;
 
-    /**
+     /**
      * This constructor is only implemented because it is required by the superclass, PanCapableView.
      * This implementation does nothing other than call super(context).
      *
@@ -40,7 +40,7 @@ public class GameOfLifeView extends PanCapableView {
      */
     GameOfLifeView(Context context) {
         super(context);
-        Assert.assertTrue(null != context);
+        if(BuildConfig.DEBUG) assertTrue(null != context);
      }
 
     /**
@@ -52,7 +52,7 @@ public class GameOfLifeView extends PanCapableView {
      */
     public GameOfLifeView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Assert.assertTrue(null != context);
+        if(BuildConfig.DEBUG) assertTrue(null != context);
     }
 
     /**
@@ -65,7 +65,7 @@ public class GameOfLifeView extends PanCapableView {
      */
     public GameOfLifeView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        Assert.assertTrue(null != context);
+        if(BuildConfig.DEBUG) assertTrue(null != context);
     }
 
     /**
@@ -86,9 +86,9 @@ public class GameOfLifeView extends PanCapableView {
         mPaint = new Paint();
         mRunnable = new Animator(this);
 
-        Assert.assertTrue(null != mHandler);
-        Assert.assertTrue(null != mPaint);
-        // Assert.assertTrue(null != mRunnable); Java lint assures ALWAYS TRUE
+        if(BuildConfig.DEBUG) assertTrue(null != mHandler);
+        if(BuildConfig.DEBUG) assertTrue(null != mPaint);
+        // if(BuildConfig.DEBUG) assertTrue(null != mRunnable); Java lint assures ALWAYS TRUE
     }
 
     /**
@@ -105,9 +105,9 @@ public class GameOfLifeView extends PanCapableView {
      */
     @Override
     protected void onDrawPanned(Canvas canvas) {
-        Assert.assertTrue(null != canvas);
-        Assert.assertTrue(null != mPaint);
-        Assert.assertTrue(null != mModel);
+        if(BuildConfig.DEBUG) assertTrue(null != canvas);
+        if(BuildConfig.DEBUG) assertTrue(null != mPaint);
+        if(BuildConfig.DEBUG) assertTrue(null != mModel);
         float cellSize = 45;
         float left = ((float) Math.floor((getLeft() - getTranslationX()) / cellSize) - 1);
         float top = ((float) Math.floor((getTop() - getTranslationY()) / cellSize) - 1);
@@ -156,15 +156,16 @@ public class GameOfLifeView extends PanCapableView {
      */
     public void toggleIsRunning() {
         boolean isRunning_pre = mIsRunning;
-        Assert.assertTrue(null != mHandler);
-        Assert.assertTrue(null != mRunnable);
+        if(BuildConfig.DEBUG) assertTrue(null != mHandler);
+        if(BuildConfig.DEBUG) assertTrue(null != mRunnable);
+
         mIsRunning = !mIsRunning;
         if (mIsRunning) {
             mHandler.postDelayed(mRunnable, 0);
         }
-        Assert.assertTrue(null != mHandler);
-        Assert.assertTrue(null != mRunnable);
-        Assert.assertTrue(isRunning_pre != mIsRunning);
+        if(BuildConfig.DEBUG) assertTrue(null != mHandler);
+        if(BuildConfig.DEBUG) assertTrue(null != mRunnable);
+        if(BuildConfig.DEBUG) assertTrue(isRunning_pre != mIsRunning);
     }
 
     /**
@@ -181,10 +182,10 @@ public class GameOfLifeView extends PanCapableView {
      * @param model The model to be displayed and updated.
      */
     public void setModel(GameOfLifeModel model) {
-        Assert.assertTrue(null != model);
+        if(BuildConfig.DEBUG) assertTrue(null != model);
         mModel = model;
         this.invalidate();
-        Assert.assertTrue(null != mModel);
+        if(BuildConfig.DEBUG) assertTrue(null != mModel);
     }
 
     /**
@@ -196,24 +197,24 @@ public class GameOfLifeView extends PanCapableView {
         final GameOfLifeView mView;
 
         Animator(GameOfLifeView view) {
-            Assert.assertTrue(null != view);
+            if(BuildConfig.DEBUG) assertTrue(null != view);
             mView = view;
-            // Assert.assertTrue(null != mView); Java lint assures ALWAYS TRUE
+            // if(BuildConfig.DEBUG) assertTrue(null != mView); Java lint assures ALWAYS TRUE
         }
 
         @Override
         public void run() {
-            Assert.assertTrue(null != mView);
-            Assert.assertTrue(null != mView.mModel);
-            Assert.assertTrue(null != mView.mHandler);
+            if(BuildConfig.DEBUG) assertTrue(null != mView);
+            if(BuildConfig.DEBUG) assertTrue(null != mView.mModel);
+            if(BuildConfig.DEBUG) assertTrue(null != mView.mHandler);
             mView.mModel.update();
             mView.invalidate();
             if (mView.mIsRunning) {
                 mView.mHandler.postDelayed(this, mView.mUpdatePeriodMs);
             }
-            //Assert.assertTrue(null != mView); Java lint assures ALWAYS TRUE
-            Assert.assertTrue(null != mView.mModel);
-            Assert.assertTrue(null != mView.mHandler);
+            //if(BuildConfig.DEBUG) assertTrue(null != mView); Java lint assures ALWAYS TRUE
+            if(BuildConfig.DEBUG) assertTrue(null != mView.mModel);
+            if(BuildConfig.DEBUG) assertTrue(null != mView.mHandler);
         }
     }
 }
