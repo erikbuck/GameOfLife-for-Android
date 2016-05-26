@@ -21,6 +21,10 @@ import static junit.framework.Assert.assertTrue;
  * using the setUpdatePeriodMs() method and whether the GameOfLifeView is "running". If
  * setUpdatePeriodMs() is not called, a reasonable default update period is used.
  *
+ * Note: to enable assertions, make sure the application is compiled with DEBUG enabled. In
+ * Android Studio, use the Build->Edit Build Types...  menu. Select the "Debug" build type and make
+ * sure the "debuggable" option is set to true.
+ *
  * @author Erik M. Buck
  * @version %G%
  */

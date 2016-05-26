@@ -3,6 +3,7 @@ package com.wsu.erikbuck.gameoflife;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,11 +11,15 @@ import android.widget.SeekBar;
 
 import java.util.HashMap;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * This is the main Activity for the application. It interacts with the GameOfLifeModel and one or
  * more Android.View instances.
+ *
+ * Note: to enable assertions, make sure the application is compiled with DEBUG enabled. In
+ * Android Studio, use the Build->Edit Build Types...  menu. Select the "Debug" build type and make
+ * sure the "debuggable" option is set to true.
  *
  * @author Erik M. Buck
  * @version %G%
@@ -60,7 +65,7 @@ public class GameOfLifeActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(BuildConfig.DEBUG) assertTrue(false);
+        if(BuildConfig.DEBUG) Log.d("Application wide:", "Assertions are enabled.");
 
         setContentView(R.layout.activity_game_of_life);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

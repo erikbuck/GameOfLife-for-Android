@@ -18,6 +18,10 @@ import static junit.framework.Assert.assertTrue;
  * Vivin Paliath's version and now supports "inflation" from an XML layout as well as automatic
  * handling of view layout and re-layout by Android.
  *
+ * Note: to enable assertions, make sure the application is compiled with DEBUG enabled. In
+ * Android Studio, use the Build->Edit Build Types...  menu. Select the "Debug" build type and make
+ * sure the "debuggable" option is set to true.
+ *
  * @author Erik M. Buck
  * @version %G%
  */

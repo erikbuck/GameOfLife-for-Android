@@ -29,6 +29,10 @@ import static junit.framework.Assert.assertTrue;
  * displayed to users. After construction, call the update() method periodically to update the game
  * state. The frequency of calls to update() does not affect game logic (rules).
  *
+ * Note: to enable assertions, make sure the application is compiled with DEBUG enabled. In
+ * Android Studio, use the Build->Edit Build Types...  menu. Select the "Debug" build type and make
+ * sure the "debuggable" option is set to true.
+ *
  * @author Erik M. Buck
  * @version %G%
  */
